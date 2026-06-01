@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSV XSite Finance Requirements — Jeopardy</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600;700&display=swap');
+
+  :root {
+    --navy: #002664;
+    --navy-light: #003380;
+    --navy-dark: #001a42;
+    --orange: #FF6E00;
+    --orange-dark: #cc5800;
+    --gold: #E9C737;
+    --white: #FFFFFF;
+    --light-gray: #f0f4fa;
+    --mid-gray: #8899bb;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--navy-dark);
+    min-height: 100vh;
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; width: 100%; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── HEADER BAR ── */
+  .top-bar {
+    background: var(--navy-dark);
+    border-bottom: 3px solid var(--orange);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .top-bar .brand {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--mid-gray);
+    text-transform: uppercase;
+  }
+  .top-bar .brand span { color: var(--orange); }
+
+  /* ── INTRO SCREEN ── */
+  #intro {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    background: radial-gradient(ellipse at 60% 30%, #003380 0%, var(--navy-dark) 70%);
+  }
+  .intro-icon {
+    width: 90px; height: 90px;
+    background: var(--orange);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 24px;
+    box-shadow: 0 0 40px rgba(255,110,0,0.4);
+  }
+  .intro-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(36px, 7vw, 64px);
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .intro-title span { color: var(--orange); }
+  .intro-sub {
+    font-size: 15px;
+    color: var(--mid-gray);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .intro-desc {
+    max-width: 540px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.8);
+    margin: 0 auto 40px;
+  }
+
+  /* Teams setup */
+  .teams-section {
+    width: 100%;
+    max-width: 560px;
+    margin-bottom: 28px;
+  }
+  .teams-section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--mid-gray);
+    text-align: center; margin-bottom: 14px;
+  }
+  .teams-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .team-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 10px 14px;
+    transition: border-color .2s;
+  }
+  .team-row:focus-within { border-color: var(--orange); }
+  .team-row .team-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px; font-weight: 700; letter-spacing: 1px;
+    color: var(--orange); min-width: 24px; text-align: center;
+  }
+  .team-row input {
+    flex: 1;
+    background: none; border: none; outline: none;
+    color: var(--white); font-family: 'Barlow', sans-serif;
+    font-size: 16px; font-weight: 600;
+  }
+  .team-row input::placeholder { color: rgba(255,255,255,0.25); }
+  .btn-remove-team {
+    background: none; border: none;
+    color: rgba(255,255,255,0.25);
+    font-size: 18px; cursor: pointer;
+    padding: 2px 6px; border-radius: 4px;
+    transition: color .15s, background .15s;
+    line-height: 1;
+  }
+  .btn-remove-team:hover { color: #ff4444; background: rgba(255,68,68,0.1); }
+  .btn-add-team {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 2px dashed rgba(255,255,255,0.2);
+    border-radius: 10px;
+    color: var(--mid-gray);
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px; font-weight: 600;
+    letter-spacing: 1px;
+    padding: 11px;
+    cursor: pointer;
+    transition: border-color .2s, color .2s, background .2s;
+  }
+  .btn-add-team:hover {
+    border-color: var(--orange);
+    color: var(--orange);
+    background: rgba(255,110,0,0.06);
+  }
+
+  .btn-start {
+    background: var(--orange);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+    padding: 16px 48px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+    box-shadow: 0 4px 20px rgba(255,110,0,0.4);
+  }
+  .btn-start:hover { background: var(--orange-dark); transform: translateY(-2px); }
+
+  /* ── GAME SCREEN ── */
+  #game { flex-direction: column; }
+
+  .scores-bar {
+    background: var(--navy);
+    display: flex;
+    gap: 12px;
+    padding: 10px 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-bottom: 2px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .score-chip {
+    background: rgba(255,255,255,0.07);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 8px 18px;
+    text-align: center;
+    min-width: 120px;
+    transition: border-color .2s, background .2s;
+  }
+  .score-chip.active-team {
+    border-color: var(--orange);
+    background: rgba(255,110,0,0.15);
+  }
+  .score-chip .t-name {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--mid-gray); margin-bottom: 4px;
+  }
+  .score-chip .t-score {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 26px; font-weight: 800; color: var(--white);
+  }
+  .score-chip.active-team .t-score { color: var(--gold); }
+
+  .board-wrap {
+    flex: 1;
+    padding: 12px;
+    overflow: auto;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .cat-header {
+    background: var(--navy);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-top: 4px solid var(--orange);
+    border-radius: 8px;
+    padding: 12px 8px;
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(11px, 1.3vw, 15px);
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--white);
+    line-height: 1.2;
+    min-height: 64px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .cell {
+    background: var(--navy);
+    border: 2px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    min-height: 72px;
+    transition: background .15s, transform .1s, border-color .15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .cell:hover:not(.used) {
+    background: var(--navy-light);
+    border-color: var(--orange);
+    transform: translateY(-2px);
+  }
+  .cell.used {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.05);
+    cursor: default;
+  }
+  .cell-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(20px, 3vw, 34px);
+    font-weight: 800;
+    color: var(--gold);
+  }
+  .cell.used .cell-value { opacity: 0; }
+  .cell.dd-cell:not(.used)::after {
+    content: '★';
+    position: absolute;
+    top: 5px; right: 8px;
+    font-size: 12px;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,14,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--navy);
+    border: 3px solid var(--orange);
+    border-radius: 16px;
+    max-width: 680px;
+    width: 100%;
+    padding: 36px 40px;
+    position: relative;
+    animation: popIn .25s ease;
+  }
+  @keyframes popIn {
+    from { transform: scale(.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .modal-cat {
+    font-size: 11px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--orange);
+    margin-bottom: 8px;
+  }
+  .modal-value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 42px; font-weight: 800; color: var(--gold);
+    line-height: 1; margin-bottom: 20px;
+  }
+  .modal-divider { height: 2px; background: rgba(255,255,255,0.1); margin-bottom: 24px; }
+
+  .modal-clue {
+    font-size: 18px; line-height: 1.6;
+    color: var(--white); margin-bottom: 28px;
+    min-height: 60px;
+  }
+
+  .modal-answer {
+    background: rgba(233,199,55,0.1);
+    border: 2px solid var(--gold);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: none;
+  }
+  .modal-answer.show { display: block; }
+  .modal-answer .ans-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
+  }
+  .modal-answer .ans-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 22px; font-weight: 700; color: var(--white);
+  }
+
+  .modal-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .modal-btn {
+    flex: 1; min-width: 120px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none; border-radius: 8px;
+    padding: 13px 20px;
+    cursor: pointer;
+    transition: opacity .15s, transform .1s;
+  }
+  .modal-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-reveal { background: var(--orange); color: var(--white); }
+  .btn-correct { background: #1a7a4a; color: var(--white); }
+  .btn-wrong { background: #8b1e1e; color: var(--white); }
+  .btn-nocount { background: rgba(255,255,255,0.12); color: var(--white); }
+  .btn-close { background: rgba(255,255,255,0.08); color: var(--mid-gray); }
+
+  /* Team selector in modal */
+  .team-selector { margin-bottom: 20px; }
+  .team-selector label {
+    font-size: 11px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--mid-gray); display: block; margin-bottom: 8px;
+  }
+  .team-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .team-pill {
+    background: rgba(255,255,255,0.07);
+    border: 2px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .team-pill.selected { background: var(--orange); border-color: var(--orange); color: var(--white); }
+
+  /* Daily Double banner */
+  .dd-banner {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+  }
+  .dd-banner.show { display: flex; }
+  .dd-star { font-size: 60px; margin-bottom: 16px; animation: spin 1s linear; }
+  @keyframes spin { from { transform: rotate(0deg) scale(0); } to { transform: rotate(360deg) scale(1); } }
+  .dd-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 52px; font-weight: 800; color: var(--gold); margin-bottom: 8px;
+  }
+  .dd-sub { font-size: 15px; color: var(--mid-gray); margin-bottom: 28px; }
+  .dd-wager-row { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; }
+  .dd-wager-input {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid var(--gold);
+    border-radius: 8px;
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px; font-weight: 700;
+    text-align: center;
+    padding: 10px 16px;
+    width: 160px;
+    outline: none;
+  }
+
+  /* ── FINAL SCREEN ── */
+  #final {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    background: radial-gradient(ellipse at 50% 40%, #003380 0%, var(--navy-dark) 70%);
+  }
+  .trophy { font-size: 80px; margin-bottom: 16px; animation: bounce 1s ease; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+  .final-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 52px; font-weight: 800; color: var(--gold); margin-bottom: 8px;
+  }
+  .final-sub { font-size: 15px; color: var(--mid-gray); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 40px; }
+  .podium { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+  .podium-card {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    padding: 20px 28px;
+    min-width: 150px;
+    text-align: center;
+  }
+  .podium-card.winner { border-color: var(--gold); background: rgba(233,199,55,0.1); }
+  .podium-rank { font-size: 28px; margin-bottom: 8px; }
+  .podium-name { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--mid-gray); margin-bottom: 6px; }
+  .podium-score { font-family: 'Barlow Condensed', sans-serif; font-size: 36px; font-weight: 800; color: var(--white); }
+  .podium-card.winner .podium-score { color: var(--gold); }
+  .btn-play-again {
+    background: var(--orange);
+    color: var(--white);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none; border-radius: 8px;
+    padding: 16px 48px; cursor: pointer;
+    transition: background .2s;
+    box-shadow: 0 4px 20px rgba(255,110,0,0.4);
+  }
+  .btn-play-again:hover { background: var(--orange-dark); }
+
+  .turn-indicator {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--mid-gray);
+    text-transform: uppercase;
+    padding: 6px;
+    flex-shrink: 0;
+  }
+  .turn-indicator span { color: var(--orange); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- INTRO SCREEN -->
+<div id="intro" class="screen active">
+  <div class="intro-icon">📊</div>
+  <div class="intro-title">Finance<br><span>Jeopardy</span></div>
+  <div class="intro-sub">DSV — XSite Program</div>
+  <p class="intro-desc">Test your knowledge of the Finance Requirements block — 5 categories, 15 questions. Answers must be in the form of a question!</p>
+
+  <div class="teams-section">
+    <div class="teams-section-label">Teams</div>
+    <div class="teams-list" id="teamsList"></div>
+    <button class="btn-add-team" onclick="addTeamRow()">+ Add Another Team</button>
+  </div>
+
+  <button class="btn-start" onclick="startGame()">Start Game</button>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game" class="screen">
+  <div class="top-bar">
+    <span class="brand">D S V — <span>X S I T E</span></span>
+    <span class="brand">Finance Requirements</span>
+  </div>
+  <div class="scores-bar" id="scoresBar"></div>
+  <div class="turn-indicator" id="turnIndicator"></div>
+  <div class="board-wrap">
+    <div class="board" id="board"></div>
+  </div>
+</div>
+
+<!-- FINAL SCREEN -->
+<div id="final" class="screen">
+  <div class="trophy">🏆</div>
+  <div class="final-title">Game Over!</div>
+  <div class="final-sub">Finance Requirements Champion</div>
+  <div class="podium" id="podium"></div>
+  <button class="btn-play-again" onclick="resetGame()">Play Again</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <!-- Daily Double View -->
+    <div class="dd-banner" id="ddBanner">
+      <div class="dd-star">⭐</div>
+      <div class="dd-title">Daily Double!</div>
+      <div class="dd-sub">Enter your wager, then reveal the clue</div>
+      <div class="dd-wager-row">
+        <input type="number" class="dd-wager-input" id="ddWager" placeholder="500" min="100">
+        <button class="modal-btn btn-reveal" onclick="confirmWager()">Confirm Wager</button>
+      </div>
+    </div>
+
+    <!-- Question View -->
+    <div id="questionView">
+      <div class="modal-cat" id="mCat"></div>
+      <div class="modal-value" id="mVal"></div>
+      <div class="modal-divider"></div>
+
+      <div class="team-selector">
+        <label>Answering Team</label>
+        <div class="team-pills" id="teamPills"></div>
+      </div>
+
+      <div class="modal-clue" id="mClue"></div>
+
+      <div class="modal-answer" id="mAnswer">
+        <div class="ans-label">Correct Answer</div>
+        <div class="ans-text" id="mAnswerText"></div>
+      </div>
+
+      <div class="modal-btns" id="modalBtns">
+        <button class="modal-btn btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+        <button class="modal-btn btn-close" onclick="closeModal()">Skip / Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// GAME DATA
+// ═══════════════════════════════════════════════
+const CATEGORIES = [
+  "P&L BASICS",
+  "REVENUE & ACCRUALS",
+  "SUPPLIERS & AP",
+  "SAP & INVOICING",
+  "BUDGETS & RATE CARDS"
+];
+
+const VALUES = [100, 200, 300];
+
+// [clue, answer]  — 5 cols × 3 rows, sourced from edited Q&A document
+const QUESTIONS = [
+  // P&L BASICS (col 0)
+  [
+    ["P&L stands for these two words — your site's monthly financial scorecard showing money in and money out.",
+     "What is Profit and Loss?"],
+    ["This term describes the gap between what was planned and what actually happened — 'Adverse' means worse than planned.",
+     "What is a Variance?"],
+    ["P&L reviews must occur at this minimum frequency and must be documented in meeting minutes with action items.",
+     "What is monthly?"],
+  ],
+  // REVENUE & ACCRUALS (col 1)
+  [
+    ["This is the term for a revenue estimate recorded before the actual invoice is confirmed, used to close the month accurately.",
+     "What is an Accrual?"],
+    ["The revenue accrual estimate must be documented and submitted on this specific day of each month.",
+     "What is Workday 1?"],
+    ["AR stands for this — money customers owe DSV for services already delivered.",
+     "What is Accounts Receivable?"],
+  ],
+  // SUPPLIERS & AP (col 2)
+  [
+    ["This is the term for a vendor whose interruption of service would immediately halt your site's operations.",
+     "What is a Critical Supplier?"],
+    ["AP stands for this — the money your site owes to suppliers, which must be managed proactively.",
+     "What is Accounts Payable?"],
+    ["This is what makes a supplier 'critical' — it's not about size or spend, it's about this.",
+     "What is operational dependency (or the ability to halt operations)?"],
+  ],
+  // SAP & INVOICING (col 3)
+  [
+    ["All invoices for the previous month must be posted in SAP by this working day deadline.",
+     "What is Workday 8?"],
+    ["This type of document — updated each month — serves as proof that your site is meeting the required invoicing timeline.",
+     "What is a record (or system report)?"],
+    ["Revenue is only officially 'counted' when posted in SAP — not when the work was done. This concept has a formal name.",
+     "What is Revenue Recognition?"],
+  ],
+  // BUDGETS & RATE CARDS (col 4)
+  [
+    ["This document lists all agreed prices per service activity for a customer and must always match the current signed contract.",
+     "What is a Rate Card (Rate Overview)?"],
+    ["Country Finance must confirm the Site Manager did this during budget season — they cannot simply be told the final number.",
+     "What is participated in and signed off the budget?"],
+    ["To confirm invoicing is aligned with approved rates, a site manager should perform this type of check on a regular basis — not just at contract renewal.",
+     "What is a periodic rate card review?"],
+  ]
+];
+
+// Daily Double positions [col, row] (0-indexed)
+// Revenue & Accruals $300 → col 1, row 2
+// SAP & Invoicing $200   → col 3, row 1
+const DAILY_DOUBLES = [[1, 2], [3, 1]];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let teams = [];
+let scores = [];
+let activeTeam = 0;
+let used = Array.from({length:5}, () => Array(3).fill(false));
+let currentQ = null; // {col, row, value, isDD}
+let ddWager = 0;
+let totalCells = 15;
+let answeredCells = 0;
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+let teamCount = 0;
+
+function addTeamRow(defaultName) {
+  teamCount++;
+  const list = document.getElementById('teamsList');
+  const row = document.createElement('div');
+  row.className = 'team-row';
+  row.id = `teamRow-${teamCount}`;
+  row.innerHTML = `
+    <span class="team-num">${teamCount}</span>
+    <input type="text" id="tInput-${teamCount}" placeholder="Team ${teamCount}" maxlength="20" value="${defaultName||''}">
+    <button class="btn-remove-team" onclick="removeTeamRow(${teamCount})" title="Remove team">&#x2715;</button>`;
+  list.appendChild(row);
+  renumberTeams();
+}
+
+function removeTeamRow(id) {
+  const row = document.getElementById(`teamRow-${id}`);
+  if (row) row.remove();
+  renumberTeams();
+}
+
+function renumberTeams() {
+  const rows = document.querySelectorAll('.team-row');
+  // only update the number badge, not the id or input id
+  rows.forEach((r, i) => {
+    r.querySelector('.team-num').textContent = i + 1;
+  });
+  // disable remove button if only 2 teams left
+  rows.forEach(r => {
+    r.querySelector('.btn-remove-team').disabled = rows.length <= 2;
+    r.querySelector('.btn-remove-team').style.opacity = rows.length <= 2 ? '0.2' : '1';
+  });
+}
+
+function initIntro() {
+  teamCount = 0;
+  document.getElementById('teamsList').innerHTML = '';
+  addTeamRow('Team 1');
+  addTeamRow('Team 2');
+}
+
+function startGame() {
+  teams = [];
+  scores = [];
+  document.querySelectorAll('.team-row').forEach((row) => {
+    const input = row.querySelector('input');
+    const val = input.value.trim() || input.placeholder;
+    teams.push(val);
+    scores.push(0);
+  });
+  if (teams.length < 2) { alert('Please add at least 2 teams.'); return; }
+  used = Array.from({length:5}, () => Array(3).fill(false));
+  answeredCells = 0;
+  activeTeam = 0;
+  buildBoard();
+  buildScores();
+  updateTurnIndicator();
+  showScreen('game');
+}
+
+// ═══════════════════════════════════════════════
+// BOARD
+// ═══════════════════════════════════════════════
+function buildBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  // headers
+  CATEGORIES.forEach(cat => {
+    const h = document.createElement('div');
+    h.className = 'cat-header';
+    h.textContent = cat;
+    board.appendChild(h);
+  });
+  // cells
+  VALUES.forEach((val, row) => {
+    CATEGORIES.forEach((cat, col) => {
+      const isDD = DAILY_DOUBLES.some(d => d[0]===col && d[1]===row);
+      const cell = document.createElement('div');
+      cell.className = 'cell' + (isDD ? ' dd-cell' : '');
+      cell.id = `cell-${col}-${row}`;
+      cell.innerHTML = `<span class="cell-value">$${val}</span>`;
+      cell.onclick = () => openQuestion(col, row, val, isDD);
+      board.appendChild(cell);
+    });
+  });
+}
+
+function buildScores() {
+  const bar = document.getElementById('scoresBar');
+  bar.innerHTML = '';
+  teams.forEach((t, i) => {
+    bar.innerHTML += `
+      <div class="score-chip ${i===activeTeam?'active-team':''}" id="chip-${i}">
+        <div class="t-name">${t}</div>
+        <div class="t-score" id="score-${i}">$0</div>
+      </div>`;
+  });
+}
+
+function updateScores() {
+  teams.forEach((t, i) => {
+    const chip = document.getElementById(`chip-${i}`);
+    if (chip) {
+      chip.className = 'score-chip' + (i===activeTeam?' active-team':'');
+      document.getElementById(`score-${i}`).textContent = '$' + scores[i].toLocaleString();
+    }
+  });
+}
+
+function updateTurnIndicator() {
+  document.getElementById('turnIndicator').innerHTML =
+    `Active Turn: <span>${teams[activeTeam]}</span>`;
+}
+
+// ═══════════════════════════════════════════════
+// QUESTION MODAL
+// ═══════════════════════════════════════════════
+function openQuestion(col, row, value, isDD) {
+  if (used[col][row]) return;
+  currentQ = {col, row, value, isDD};
+
+  // reset modal state
+  document.getElementById('mAnswer').classList.remove('show');
+  document.getElementById('ddBanner').classList.remove('show');
+  document.getElementById('questionView').style.display = '';
+
+  if (isDD) {
+    // show DD banner first
+    document.getElementById('ddBanner').classList.add('show');
+    document.getElementById('questionView').style.display = 'none';
+    document.getElementById('ddWager').value = '';
+    document.getElementById('ddWager').max = Math.max(scores[activeTeam], value*2);
+  } else {
+    loadQuestion();
+  }
+
+  buildTeamPills();
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function confirmWager() {
+  const w = parseInt(document.getElementById('ddWager').value) || currentQ.value;
+  ddWager = Math.max(100, Math.min(w, Math.max(scores[activeTeam], currentQ.value * 2)));
+  document.getElementById('ddBanner').classList.remove('show');
+  document.getElementById('questionView').style.display = '';
+  loadQuestion(true);
+}
+
+function loadQuestion(isDD=false) {
+  const {col, row, value} = currentQ;
+  const [clue, answer] = QUESTIONS[col][row];
+  document.getElementById('mCat').textContent = CATEGORIES[col];
+  document.getElementById('mVal').textContent = isDD ? `$${ddWager} (Daily Double)` : `$${value}`;
+  document.getElementById('mClue').textContent = clue;
+  document.getElementById('mAnswerText').textContent = answer;
+  document.getElementById('mAnswer').classList.remove('show');
+
+  const btns = document.getElementById('modalBtns');
+  btns.innerHTML = `
+    <button class="modal-btn btn-reveal" id="btnReveal" onclick="revealAnswer()">Reveal Answer</button>
+    <button class="modal-btn btn-close" onclick="closeModal()">Skip / Close</button>`;
+}
+
+function buildTeamPills() {
+  const pills = document.getElementById('teamPills');
+  pills.innerHTML = '';
+  teams.forEach((t, i) => {
+    pills.innerHTML += `<div class="team-pill ${i===activeTeam?'selected':''}" onclick="selectTeam(${i})">${t}</div>`;
+  });
+}
+
+function selectTeam(i) {
+  activeTeam = i;
+  document.querySelectorAll('.team-pill').forEach((p,idx) => {
+    p.classList.toggle('selected', idx===i);
+  });
+}
+
+function revealAnswer() {
+  document.getElementById('mAnswer').classList.add('show');
+  const pts = currentQ.isDD ? ddWager : currentQ.value;
+  document.getElementById('modalBtns').innerHTML = `
+    <button class="modal-btn btn-correct" onclick="scoreIt(${pts})">✓ Correct (+$${pts})</button>
+    <button class="modal-btn btn-wrong" onclick="scoreIt(-${pts})">✗ Wrong (−$${pts})</button>
+    <button class="modal-btn btn-nocount" onclick="scoreIt(0)">No Score</button>`;
+}
+
+function scoreIt(delta) {
+  scores[activeTeam] = Math.max(0, scores[activeTeam] + delta);
+  markUsed();
+  nextTeam();
+  closeModal();
+  checkGameOver();
+}
+
+function markUsed() {
+  const {col, row} = currentQ;
+  used[col][row] = true;
+  const cell = document.getElementById(`cell-${col}-${row}`);
+  if (cell) cell.classList.add('used');
+  answeredCells++;
+}
+
+function nextTeam() {
+  activeTeam = (activeTeam + 1) % teams.length;
+  updateScores();
+  updateTurnIndicator();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  updateScores();
+}
+
+function checkGameOver() {
+  if (answeredCells >= totalCells) {
+    setTimeout(showFinal, 600);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// FINAL
+// ═══════════════════════════════════════════════
+function showFinal() {
+  const sorted = teams.map((t, i) => ({name: t, score: scores[i]}))
+    .sort((a, b) => b.score - a.score);
+
+  const medals = ['🥇','🥈','🥉','4️⃣'];
+  const podium = document.getElementById('podium');
+  podium.innerHTML = sorted.map((t, i) => `
+    <div class="podium-card ${i===0?'winner':''}">
+      <div class="podium-rank">${medals[i]||''}</div>
+      <div class="podium-name">${t.name}</div>
+      <div class="podium-score">$${t.score.toLocaleString()}</div>
+    </div>`).join('');
+
+  showScreen('final');
+}
+
+function resetGame() {
+  initIntro();
+  showScreen('intro');
+}
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════
+initIntro();
+</script>
+</body>
+</html>
